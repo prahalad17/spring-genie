@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.peeps.tools.springgenie.controller.MainController">
+    <children>
+        <Label text="SpringGenie - Entity Builder" layoutX="20" layoutY="20" />
+    </children>
+</AnchorPane>
