@@ -1,0 +1,18 @@
+# STS / Eclipse / IntelliJ
+/.idea/
+/.classpath
+.project
+.settings/
+/target/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Maven Wrapper
+.mvn/
+mvnw
+mvnw.cmd
