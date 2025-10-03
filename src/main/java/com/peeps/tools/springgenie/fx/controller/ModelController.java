@@ -1,4 +1,4 @@
-package com.peeps.tools.springgenie.controller;
+package com.peeps.tools.springgenie.fx.controller;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,7 +14,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
-public class MainController {
+public class ModelController {
+	
 	@FXML
 	private TextField classNameField;
 	@FXML

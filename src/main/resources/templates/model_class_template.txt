@@ -1,7 +1,18 @@
 package ${packageName};
 
+${imports}
+
+/**
+ * @author ${author}
+ */
+ 
+ 
+${classAnnotations}
 public class ${ClassName} {
 
 ${fields}
+
+${commonFields}
+
 
 }
