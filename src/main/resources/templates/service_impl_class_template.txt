@@ -1,0 +1,122 @@
+package ${BASE_PACKAGE}.service.impl;
+
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import ${BASE_PACKAGE}.dto.${CLASS}Request;
+import ${BASE_PACKAGE}.dto.${CLASS}Response;
+import ${BASE_PACKAGE}.model.${CLASS};
+import ${BASE_PACKAGE}.repository.${CLASS}Repository;
+import ${BASE_PACKAGE}.service.I${CLASS}Service;
+import ${BASE_PACKAGE}.exception.ApplicationException;
+import ${BASE_PACKAGE}.exception.LayerException;
+
+@Service
+@Transactional
+public class ${CLASS}ServiceImpl implements I${CLASS}Service {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(${CLASS}ServiceImpl.class);
+
+    private final ${CLASS}Repository repository;
+
+    @Autowired
+    public ${CLASS}ServiceImpl(${CLASS}Repository repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public ${CLASS}Response create(${CLASS}Request request) {
+        LOGGER.info("create() - START");
+        try {
+            ${CLASS} entity = mapToEntity(request);
+            ${CLASS} saved = repository.save(entity);
+            return mapToResponse(saved);
+        } catch (Exception e) {
+            LOGGER.error("create() failed", e);
+            throw new ApplicationException(LayerException.SERVICE, e.getMessage());
+        } finally {
+            LOGGER.info("create() - END");
+        }
+    }
+
+    @Override
+    public ${CLASS}Response getById(${ID_TYPE} id) {
+        LOGGER.info("getById() - START id={}", id);
+        try {
+            Optional<${CLASS}> opt = repository.findById(id);
+            return opt.map(this::mapToResponse)
+                      .orElseThrow(() -> new ApplicationException(LayerException.SERVICE, "${CLASS} not found with id " + id));
+        } finally {
+            LOGGER.info("getById() - END");
+        }
+    }
+
+    @Override
+    public Page<${CLASS}Response> getAll(CommonGetReqDto request, Pageable pageable) {
+        LOGGER.info("getAll() - START");
+        try {
+            Page<${CLASS}> page = repository.findAll(pageable);
+            return page.map(this::mapToResponse);
+        } finally {
+            LOGGER.info("getAll() - END");
+        }
+    }
+
+    @Override
+    public ${CLASS}Response update(${ID_TYPE} id, ${CLASS}Request request) {
+        LOGGER.info("update() - START id={}", id);
+        try {
+            ${CLASS} entity = repository.findById(id)
+                .orElseThrow(() -> new ApplicationException(LayerException.SERVICE, "${CLASS} not found with id " + id));
+            
+            updateEntity(entity, request);
+            ${CLASS} updated = repository.save(entity);
+            return mapToResponse(updated);
+        } finally {
+            LOGGER.info("update() - END");
+        }
+    }
+
+    @Override
+    public void delete(${ID_TYPE} id) {
+        LOGGER.info("delete() - START id={}", id);
+        try {
+            if (!repository.existsById(id)) {
+                throw new ApplicationException(LayerException.SERVICE, "${CLASS} not found with id " + id);
+            }
+            repository.deleteById(id);
+        } finally {
+            LOGGER.info("delete() - END");
+        }
+    }
+
+    // ---------------- Mapping Helpers ----------------
+    private ${CLASS} mapToEntity(${CLASS}Request req) {
+        ${CLASS} entity = new ${CLASS}();
+        // map fields manually
+        // entity.setStatus(req.getStatus());
+        // entity.setRemarks(req.getRemarks());
+        return entity;
+    }
+
+    private void updateEntity(${CLASS} entity, ${CLASS}Request req) {
+        // update fields manually
+        // entity.setStatus(req.getStatus());
+        // entity.setRemarks(req.getRemarks());
+    }
+
+    private ${CLASS}Response mapToResponse(${CLASS} entity) {
+        ${CLASS}Response resp = new ${CLASS}Response();
+        // map fields manually
+        // resp.setStatus(entity.getStatus());
+        // resp.setRemarks(entity.getRemarks());
+        return resp;
+    }
+}

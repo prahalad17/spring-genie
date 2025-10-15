@@ -1,0 +1,187 @@
+package ${BASE_PACKAGE}.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+
+import ${BASE_PACKAGE}.dto.${CLASS}Request;
+import ${BASE_PACKAGE}.dto.${CLASS}Response;
+import ${BASE_PACKAGE}.service.I${CLASS}Service;
+import ${BASE_PACKAGE}.common.dto.CommonGetReqDto;
+import ${BASE_PACKAGE}.common.dto.CommonGetRespDto;
+import ${BASE_PACKAGE}.common.dto.CommonPostRespDto;
+import ${BASE_PACKAGE}.exception.ApplicationException;
+import ${BASE_PACKAGE}.exception.LayerException;
+import ${BASE_PACKAGE}.utils.SanitizerHelper;
+import ${BASE_PACKAGE}.utils.TypesProxy;
+
+/**
+ * Controller for ${CLASS} CRUD operations
+ */
+@RestController
+@RequestMapping("/v1/${endpointBase}")        // e.g. /v1/asd
+public class ${CLASS}Controller {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(${CLASS}Controller.class);
+
+    private final I${CLASS}Service service;
+
+    @Autowired
+    public ${CLASS}Controller(I${CLASS}Service service) {
+        this.service = service;
+    }
+
+    @Operation(summary = "Create ${CLASS}")
+    @PostMapping
+    public ResponseEntity<?> create(@Valid @RequestBody ${CLASS}Request req) throws ApplicationException {
+        LOGGER.info("create() - START");
+        try {
+            // sanitize incoming values (example)
+            // req.setName(SanitizerHelper.cleanString(req.getName()));
+
+            Optional<Map<String, String>> errors = validateCreateOrUpdate(req);
+            if (errors.isPresent()) {
+                return ResponseEntity.badRequest()
+                    .body(new CommonPostRespDto("Failed", HttpStatus.BAD_REQUEST.value(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(), errors.get()));
+            }
+
+            ${CLASS}Response resp = service.create(req);
+            return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+
+        } catch (ApplicationException ae) {
+            LOGGER.error("create() - application error", ae);
+            throw new ApplicationException(LayerException.CONTROLLER, ae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("create() - unexpected error", e);
+            throw new ApplicationException(LayerException.CONTROLLER, e.getMessage());
+        } finally {
+            LOGGER.info("create() - END");
+        }
+    }
+
+    @Operation(summary = "Get ${CLASS} by id")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable("id") ${ID_TYPE} id) throws ApplicationException {
+        LOGGER.info("getById() - START - id={}", id);
+        try {
+            if (id == null) {
+                return ResponseEntity.badRequest().body(new CommonPostRespDto("Failed", HttpStatus.BAD_REQUEST.value(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(), Map.of("id", "must be provided")));
+            }
+
+            ${CLASS}Response resp = service.getById(id);
+            return ResponseEntity.ok(resp);
+
+        } catch (ApplicationException ae) {
+            LOGGER.error("getById() - application error", ae);
+            throw new ApplicationException(LayerException.CONTROLLER, ae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("getById() - unexpected error", e);
+            throw new ApplicationException(LayerException.CONTROLLER, e.getMessage());
+        } finally {
+            LOGGER.info("getById() - END");
+        }
+    }
+
+    @Operation(summary = "List ${CLASS} (paged)")
+    @PostMapping("/list")
+    public ResponseEntity<?> list(@RequestBody(required = false) CommonGetReqDto commonGetReqDto, Pageable pageable)
+            throws ApplicationException {
+        LOGGER.info("list() - START");
+        try {
+            CommonGetReqDto req = commonGetReqDto == null ? new CommonGetReqDto() : commonGetReqDto;
+            Page<${CLASS}Response> page = service.getAll(req, pageable);
+
+            CommonGetRespDto<${CLASS}Response> wrapper = new CommonGetRespDto<>();
+            wrapper.setData(page.getContent());
+            wrapper.setTotalElements(page.getTotalElements());
+            wrapper.setTotalPages(page.getTotalPages());
+            wrapper.setPageNumber(page.getNumber());
+            wrapper.setPageSize(page.getSize());
+
+            return ResponseEntity.ok(wrapper);
+
+        } catch (ApplicationException ae) {
+            LOGGER.error("list() - application error", ae);
+            throw new ApplicationException(LayerException.CONTROLLER, ae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("list() - unexpected error", e);
+            throw new ApplicationException(LayerException.CONTROLLER, e.getMessage());
+        } finally {
+            LOGGER.info("list() - END");
+        }
+    }
+
+    @Operation(summary = "Update ${CLASS} by id")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") ${ID_TYPE} id, @Valid @RequestBody ${CLASS}Request req)
+            throws ApplicationException {
+        LOGGER.info("update() - START - id={}", id);
+        try {
+            // sanitize req fields if needed
+
+            Optional<Map<String, String>> errors = validateCreateOrUpdate(req);
+            if (errors.isPresent()) {
+                return ResponseEntity.badRequest()
+                    .body(new CommonPostRespDto("Failed", HttpStatus.BAD_REQUEST.value(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(), errors.get()));
+            }
+
+            ${CLASS}Response updated = service.update(id, req);
+            return ResponseEntity.ok(updated);
+
+        } catch (ApplicationException ae) {
+            LOGGER.error("update() - application error", ae);
+            throw new ApplicationException(LayerException.CONTROLLER, ae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("update() - unexpected error", e);
+            throw new ApplicationException(LayerException.CONTROLLER, e.getMessage());
+        } finally {
+            LOGGER.info("update() - END");
+        }
+    }
+
+    @Operation(summary = "Delete ${CLASS} by id")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") ${ID_TYPE} id) throws ApplicationException {
+        LOGGER.info("delete() - START - id={}", id);
+        try {
+            service.delete(id);
+            return ResponseEntity.noContent().build();
+
+        } catch (ApplicationException ae) {
+            LOGGER.error("delete() - application error", ae);
+            throw new ApplicationException(LayerException.CONTROLLER, ae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("delete() - unexpected error", e);
+            throw new ApplicationException(LayerException.CONTROLLER, e.getMessage());
+        } finally {
+            LOGGER.info("delete() - END");
+        }
+    }
+
+    /**
+     * Basic validation hook — return Optional.of(map) when errors exist.
+     * Customize per-entity as needed.
+     */
+    private Optional<Map<String, String>> validateCreateOrUpdate(${CLASS}Request req) {
+        Map<String, String> errors = new HashMap<>();
+        // Example validations:
+        // if (TypesProxy.isBlankOrNull(req.getName())) errors.put("name", "required");
+        return errors.isEmpty() ? Optional.empty() : Optional.of(errors);
+    }
+}

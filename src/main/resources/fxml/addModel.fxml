@@ -2,6 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -10,39 +12,57 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_LEFT" spacing="15.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.peeps.tools.springgenie.fx.controller.ModelController">
+<VBox alignment="TOP_LEFT" prefHeight="659.0" prefWidth="793.0" spacing="15.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.peeps.tools.springgenie.fx.controller.AddModelController">
 
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 
-    <Label prefHeight="30.0" prefWidth="383.0" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="SpringGenie - Model Generator">
+    <Label prefHeight="30.0" prefWidth="383.0" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="SpringGenie - Model Creation">
       <font>
          <Font size="20.0" />
       </font></Label>
+   <VBox prefHeight="75.0" prefWidth="647.0">
+      <children>
+      
+                <HBox prefHeight="46.0" prefWidth="715.0" spacing="10">
+              <Label text="Class Name:" />
+              <TextField fx:id="classNameField" promptText="Enter model class name" />
+            <Label text="Package Name" />
+            <TextField fx:id="packageNameField" promptText="Enter package name" />
+          </HBox>
+         <HBox prefHeight="36.0" prefWidth="619.0" spacing="10">
+            <children>
+               <Label text="Annotations" />
+               <CheckBox fx:id="entityAnot" mnemonicParsing="false" selected="true" text="\@Entity" />
+               <CheckBox fx:id="dataAnot" mnemonicParsing="false" selected="true" text="\@Data" />
+               <CheckBox fx:id="allArgsAnot" mnemonicParsing="false" selected="true" text="\@AllArgsConstructor" />
+               <CheckBox fx:id="noArgsAnot" mnemonicParsing="false" selected="true" text="\@NoArgsConstructor" />
+               <CheckBox fx:id="tableAnot" mnemonicParsing="false" selected="true" text="\@Table" />
+            </children>
+         </HBox>
+      </children>
+   </VBox>
 
-    <HBox spacing="10">
-        <Label text="Class Name:" />
-        <TextField fx:id="classNameField" promptText="Enter model class name" />
-    </HBox>
-
-    <VBox spacing="10">
+    <VBox prefHeight="69.0" prefWidth="753.0" spacing="10">
         <Label text="Fields:" />
-        <TableView fx:id="fieldsTable" editable="true" prefHeight="200">
-            <columns>
-                <TableColumn fx:id="fieldNameColumn" prefWidth="98.0" sortable="false" text="Field Name" />
-                <TableColumn fx:id="fieldTypeColumn" prefWidth="114.0" sortable="false" text="Field Type" />
-            <TableColumn prefWidth="163.0" text="Column X" />
-            </columns>
-        </TableView>
 
-        <HBox spacing="10">
+        <HBox prefHeight="11.0" prefWidth="753.0" spacing="10">
             <TextField fx:id="newFieldName" promptText="Field Name" />
-            <TextField fx:id="newFieldType" promptText="Field Type" />
+         <ComboBox fx:id="newFieldType" prefWidth="150.0" promptText="Field Type" />
+         <CheckBox fx:id="pkDbProp" mnemonicParsing="false" selected="true" text="\@ID" />
             <Button onAction="#handleAddField" text="Add Field" />
         </HBox>
     </VBox>
+   <TableView fx:id="fieldsTable" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true">
+     <columns>
+       <TableColumn fx:id="fieldNameColumn" prefWidth="75.0" text="Field Name" />
+       <TableColumn fx:id="fieldTypeColumn" prefWidth="75.0" text="Field Type" />
+         <TableColumn fx:id="fieldPropsColumn" prefWidth="75.0" text="Field Props " />
+     </columns>
+   </TableView>
 
     <Button onAction="#handleGenerateModel" text="Generate Model Class" />
+   <Button onAction="#handleGenerateDto" text="Generate Dto Class" />
 
 </VBox>

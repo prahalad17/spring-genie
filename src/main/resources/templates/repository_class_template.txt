@@ -1,0 +1,11 @@
+package ${BASE_PACKAGE}.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import ${BASE_PACKAGE}.model.${CLASS};
+
+@Repository
+public interface ${CLASS}Repository extends JpaRepository<${CLASS}, ${ID_TYPE}> {
+    // Custom queries can be added here if needed
+}

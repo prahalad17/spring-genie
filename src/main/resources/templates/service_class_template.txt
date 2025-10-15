@@ -1,0 +1,21 @@
+package ${BASE_PACKAGE}.service;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import ${BASE_PACKAGE}.dto.${CLASS}Request;
+import ${BASE_PACKAGE}.dto.${CLASS}Response;
+import ${BASE_PACKAGE}.common.dto.CommonGetReqDto;
+
+public interface I${CLASS}Service {
+
+    ${CLASS}Response create(${CLASS}Request request);
+
+    ${CLASS}Response getById(${ID_TYPE} id);
+
+    Page<${CLASS}Response> getAll(CommonGetReqDto request, Pageable pageable);
+
+    ${CLASS}Response update(${ID_TYPE} id, ${CLASS}Request request);
+
+    void delete(${ID_TYPE} id);
+}

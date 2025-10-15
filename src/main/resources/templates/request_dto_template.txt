@@ -1,0 +1,17 @@
+package ${packageName}.dto;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+/**
+ * Request DTO for ${ClassName}
+ * @author ${author}
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ${ClassName}Request {
+
+${fields}
+}

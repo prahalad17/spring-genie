@@ -1,4 +1,4 @@
-package com.peeps.tools.springgenie.fx.controller;
+package com.peeps.tools.springgenie.fx.model;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

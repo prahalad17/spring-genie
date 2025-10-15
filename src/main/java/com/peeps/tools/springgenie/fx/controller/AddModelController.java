@@ -7,7 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
+import com.peeps.tools.springgenie.fx.model.ModelField;
 import com.peeps.tools.springgenie.fx.utils.TemplateConstants;
 
 import javafx.collections.FXCollections;
@@ -129,6 +131,16 @@ public class AddModelController {
 		generateModelClass(className, fields);
 	}
 
+	@FXML
+	private void handleGenerateDto() {
+		String className = classNameField.getText().trim();
+		if (className.isEmpty() || fields.isEmpty()) {
+			showAlert("Class name or fields are missing.");
+			return;
+		}
+		generateDtoClasses(className, fields);
+	}
+
 	private String generateClassAnnotations(String className, List<ModelField> fields, Set<String> imports) {
 		// For now we always add @Entity
 		imports.add("import javax.persistence.Entity;");
@@ -171,7 +183,7 @@ public class AddModelController {
 			String content = template.replace("${ClassName}", className).replace("${packageName}", packageName)
 					.replace("${fields}", fieldsBlock).replace("${author}", TemplateConstants.authorName)
 					.replace("${classAnnotations}", classAnnotations)
-					.replace("${commonFields}", TemplateConstants.dbCommonFields).replace("${imports}","");
+					.replace("${commonFields}", TemplateConstants.dbCommonFields).replace("${imports}", "");
 
 			System.out.println(content);
 			// Output path (update as needed)
@@ -189,6 +201,45 @@ public class AddModelController {
 		}
 	}
 
+	private void generateDtoClasses(String className, List<ModelField> fields) {
+		try {
+			String packageName = "com.peeps.generated"; // or configurable
+			String dtoPackage = packageName + ".dto";
+
+			// Request DTO (exclude audit fields)
+			List<ModelField> requestFields = fields.stream().filter(
+					f -> !List.of("createdOn", "updatedOn", "createdBy", "updatedBy").contains(f.getFieldName()))
+					.collect(Collectors.toList());
+
+			String reqFieldsBlock = generateDtoFieldBlock(requestFields);
+			String requestDto = loadTemplate("request_dto_template.txt").replace("${ClassName}", capitalize(className))
+					.replace("${packageName}", packageName).replace("${fields}", reqFieldsBlock)
+					.replace("${author}", TemplateConstants.authorName);
+
+			// Response DTO (all fields)
+			String resFieldsBlock = generateDtoFieldBlock(fields);
+			String responseDto = loadTemplate("response_dto_template.txt")
+					.replace("${ClassName}", capitalize(className)).replace("${packageName}", packageName)
+					.replace("${fields}", resFieldsBlock).replace("${author}", TemplateConstants.authorName);
+
+			System.out.println(responseDto);
+			System.out.println(requestDto);
+
+			// Write files
+//			Path outputDir = Paths.get("generated-src", dtoPackage.replace(".", "/"));
+//			Files.createDirectories(outputDir);
+//
+//			Files.writeString(outputDir.resolve(capitalize(className) + "Request.java"), requestDto);
+//			Files.writeString(outputDir.resolve(capitalize(className) + "Response.java"), responseDto);
+
+//			showAlert("DTO classes generated for " + className);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			showAlert("Error generating DTOs: " + e.getMessage());
+		}
+	}
+
 	private String loadTemplate(String templateName) throws IOException {
 		InputStream is = getClass().getResourceAsStream("/templates/" + templateName);
 		if (is == null) {
@@ -197,11 +248,26 @@ public class AddModelController {
 		return new String(is.readAllBytes(), StandardCharsets.UTF_8);
 	}
 
+	private String capitalize(String str) {
+		if (str == null || str.isEmpty())
+			return str;
+		return str.substring(0, 1).toUpperCase() + str.substring(1);
+	}
+
 	private String generateFieldBlock(List<ModelField> fields) {
 		StringBuilder sb = new StringBuilder();
 		for (ModelField field : fields) {
 			sb.append("    @Column(name = \"").append(toSnakeCase(field.getFieldName())).append("\")").append("\n")
 					.append("    private ").append(field.getFieldType()).append(" ").append(field.getFieldName())
+					.append(";\n");
+		}
+		return sb.toString();
+	}
+
+	private String generateDtoFieldBlock(List<ModelField> fields) {
+		StringBuilder sb = new StringBuilder();
+		for (ModelField field : fields) {
+			sb.append("    private ").append(field.getFieldType()).append(" ").append(field.getFieldName())
 					.append(";\n");
 		}
 		return sb.toString();
